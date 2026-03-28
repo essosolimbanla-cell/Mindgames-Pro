@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindGames Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #1a1a24;
+  --bg4: #22222e;
+  --gold: #c9a84c;
+  --gold2: #e8c96a;
+  --silver: #8a9bb5;
+  --accent: #6c63ff;
+  --accent2: #9f97ff;
+  --success: #4caf7d;
+  --danger: #e05c5c;
+  --text: #e8e6f0;
+  --text2: #9896a8;
+  --text3: #5c5a6a;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --glow: rgba(108,99,255,0.15);
+  --gold-glow: rgba(201,168,76,0.15);
+  --r: 12px;
+  --r2: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.app { display: flex; height: 100vh; overflow: hidden; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px; min-width: 220px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto; z-index: 10;
+}
+.logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 17px;
+  letter-spacing: -0.5px; color: var(--gold2);
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--gold), var(--accent));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.player-card {
+  margin: 14px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r); padding: 12px;
+}
+.player-avatar {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--accent), var(--gold));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+  color: white; margin-bottom: 8px;
+}
+.player-name { font-weight: 500; font-size: 13px; color: var(--text); margin-bottom: 2px; }
+.player-rank { font-size: 11px; color: var(--gold); font-weight: 500; margin-bottom: 8px; }
+.xp-bar-wrap { background: var(--bg4); border-radius: 4px; height: 4px; margin-bottom: 4px; }
+.xp-bar { height: 4px; background: linear-gradient(90deg, var(--gold), var(--gold2)); border-radius: 4px; transition: width 0.6s ease; }
+.xp-label { font-size: 10px; color: var(--text3); }
+.nav-section { padding: 8px 12px 4px; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 16px; font-size: 13px; font-weight: 400;
+  color: var(--text2); cursor: pointer;
+  transition: all 0.2s; border-left: 2px solid transparent;
+  margin: 0 4px 1px; border-radius: 8px;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: var(--glow); color: var(--accent2); border-left: 2px solid var(--accent); font-weight: 500; }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-badge { margin-left: auto; background: var(--accent); color: white; font-size: 9px; font-weight: 600; padding: 1px 5px; border-radius: 10px; }
+.sidebar-footer { margin-top: auto; padding: 12px; border-top: 1px solid var(--border); }
+
+/* MAIN */
+.main { flex: 1; overflow-y: auto; overflow-x: hidden; background: var(--bg); display: flex; flex-direction: column; }
+.topbar {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: 54px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; position: sticky; top: 0; z-index: 5;
+}
+.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); }
+.breadcrumb .sep { color: var(--text3); }
+.breadcrumb .current { color: var(--text); font-weight: 500; }
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.btn-icon {
+  width: 32px; height: 32px; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: var(--r2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px; transition: all 0.2s; color: var(--text2);
+}
+.btn-icon:hover { background: var(--bg4); color: var(--text); }
+.lang-toggle {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 5px 10px;
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  color: var(--text2); transition: all 0.2s; letter-spacing: 0.5px;
+}
+.lang-toggle:hover { color: var(--gold2); border-color: var(--gold); }
+.content { flex: 1; padding: 24px; }
+.page-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 22px; color: var(--text); margin-bottom: 4px; }
+.page-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 22px; }
+
+/* STATS ROW */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; transition: border-color 0.2s; }
+.stat-card:hover { border-color: var(--border2); }
+.stat-label { font-size: 11px; color: var(--text3); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+.stat-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
+.stat-delta { font-size: 11px; margin-top: 4px; }
+.stat-delta.up { color: var(--success); }
+
+/* GAME CATEGORIES */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.section-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px; color: var(--text); }
+.category-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.cat-tab { padding: 6px 14px; font-size: 12px; font-weight: 500; border-radius: 20px; border: 1px solid var(--border2); cursor: pointer; transition: all 0.2s; color: var(--text2); background: transparent; }
+.cat-tab:hover { border-color: var(--accent); color: var(--accent2); }
+.cat-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+/* GAME GRID */
+.games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+.game-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; cursor: pointer; transition: all 0.25s; position: relative; }
+.game-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+.game-banner { height: 80px; display: flex; align-items: center; justify-content: center; font-size: 32px; position: relative; overflow: hidden; }
+.game-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(17,17,24,0.8) 100%); }
+.game-body { padding: 10px 12px 12px; }
+.game-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 2px; }
+.game-type { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+.game-meta { display: flex; align-items: center; justify-content: space-between; }
+.game-level { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text2); }
+.level-dots { display: flex; gap: 2px; }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text3); }
+.dot.filled { background: var(--gold); }
+.play-btn { background: var(--accent); border: none; color: white; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
+.play-btn:hover { background: var(--accent2); transform: scale(1.04); }
+.game-badge { position: absolute; top: 8px; right: 8px; background: var(--gold); color: var(--bg); font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; z-index: 2; letter-spacing: 0.3px; }
+.game-badge.new { background: var(--success); color: white; }
+.game-badge.hot { background: var(--danger); color: white; }
+
+/* PANELS */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+.panel { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; }
+.panel-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.badges-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px; background: var(--bg3); border-radius: var(--r2); border: 1px solid var(--border); min-width: 58px; transition: border-color 0.2s; cursor: pointer; }
+.badge-item:hover { border-color: var(--gold); }
+.badge-item.locked { opacity: 0.35; filter: grayscale(1); }
+.badge-icon { font-size: 22px; line-height: 1; }
+.badge-name { font-size: 9px; color: var(--text2); text-align: center; font-weight: 500; }
+
+/* LEADERBOARD */
+.lb-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; transition: background 0.15s; cursor: pointer; }
+.lb-row:last-child { border-bottom: none; }
+.lb-row:hover { background: var(--bg3); margin: 0 -16px; padding: 8px 16px; }
+.lb-rank { font-family: 'Syne', sans-serif; font-weight: 700; width: 20px; text-align: center; }
+.lb-rank.gold { color: var(--gold2); }
+.lb-rank.silver { color: var(--silver); }
+.lb-rank.bronze { color: #cd7f32; }
+.lb-ava { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+.lb-name { flex: 1; color: var(--text); font-weight: 500; }
+.lb-score { color: var(--gold); font-weight: 600; font-family: 'Syne', sans-serif; }
+
+/* GAME SCREEN */
+#game-screen { display: none; flex-direction: column; height: 100%; }
+.game-header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+.back-btn { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r2); padding: 7px 14px; color: var(--text2); font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+.back-btn:hover { color: var(--text); background: var(--bg4); }
+.game-title-bar { flex: 1; }
+.game-title-bar h2 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); }
+.game-title-bar span { font-size: 11px; color: var(--text3); }
+.game-hud { display: flex; align-items: center; gap: 12px; font-size: 12px; }
+.hud-item { display: flex; align-items: center; gap: 5px; background: var(--bg3); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-family: 'Syne', sans-serif; font-weight: 600; color: var(--text); }
+.hud-label { font-family: 'DM Sans', sans-serif; font-weight: 400; color: var(--text3); font-size: 10px; }
+.game-area { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; align-items: center; }
+
+/* MEMORY */
+.memory-grid { display: grid; gap: 10px; margin: 20px 0; justify-items: center; }
+.mem-card { width: 72px; height: 72px; background: var(--bg3); border: 1.5px solid var(--border2); border-radius: var(--r); display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; transition: all 0.3s; user-select: none; }
+.mem-card.hidden span { opacity: 0; }
+.mem-card.flipped { background: var(--bg4); border-color: var(--accent); box-shadow: 0 0 15px var(--glow); }
+.mem-card.matched { background: rgba(76,175,125,0.1); border-color: var(--success); box-shadow: 0 0 12px rgba(76,175,125,0.2); }
+.mem-card:hover:not(.matched) { border-color: var(--accent2); transform: scale(1.05); }
+
+/* CHESS */
+.chess-board { display: grid; grid-template-columns: repeat(8, 1fr); border: 2px solid var(--border2); border-radius: var(--r2); overflow: hidden; max-width: 380px; margin: 0 auto; }
+.chess-cell { width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: all 0.15s; user-select: none; }
+.chess-cell.light { background: #e8d5a3; }
+.chess-cell.dark-sq { background: #8b6914; }
+.chess-cell.selected { background: rgba(108,99,255,0.5) !important; }
+
+/* QUIZ */
+.quiz-container { max-width: 520px; width: 100%; }
+.quiz-progress { display: flex; gap: 4px; margin-bottom: 20px; }
+.q-dot { flex: 1; height: 3px; background: var(--bg4); border-radius: 2px; transition: background 0.3s; }
+.q-dot.done { background: var(--success); }
+.q-dot.current { background: var(--accent); }
+.quiz-question { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 14px; font-size: 15px; font-weight: 500; line-height: 1.6; }
+.quiz-seq { display: flex; gap: 8px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
+.seq-box { width: 46px; height: 46px; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r2); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--gold2); }
+.seq-box.unknown { background: var(--accent); color: white; font-size: 20px; }
+.quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.quiz-opt { background: var(--bg2); border: 1.5px solid var(--border2); border-radius: var(--r2); padding: 12px 14px; cursor: pointer; transition: all 0.2s; font-size: 14px; font-weight: 500; text-align: center; color: var(--text); font-family: 'Syne', sans-serif; }
+.quiz-opt:hover { border-color: var(--accent); background: var(--glow); }
+.quiz-opt.correct { border-color: var(--success); background: rgba(76,175,125,0.1); color: var(--success); }
+.quiz-opt.wrong { border-color: var(--danger); background: rgba(224,92,92,0.1); color: var(--danger); }
+
+/* QE */
+.emotion-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 28px; max-width: 480px; width: 100%; text-align: center; }
+.emotion-face { font-size: 80px; margin-bottom: 14px; line-height: 1; }
+.emotion-question { font-size: 15px; font-weight: 500; margin-bottom: 20px; color: var(--text); line-height: 1.6; }
+.emotion-opts { display: flex; flex-direction: column; gap: 8px; }
+.emo-opt { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--r2); padding: 11px 16px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; text-align: left; color: var(--text); }
+.emo-opt:hover { border-color: var(--accent); background: var(--glow); }
+.emo-opt.correct { border-color: var(--success); background: rgba(76,175,125,0.1); color: var(--success); }
+.emo-opt.wrong { border-color: var(--danger); background: rgba(224,92,92,0.1); color: var(--danger); }
+
+/* SOLITAIRE */
+.solitaire-area { max-width: 580px; width: 100%; }
+.solitaire-top { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start; }
+.card-pile { width: 62px; min-height: 88px; border: 1.5px dashed var(--border2); border-radius: var(--r2); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text3); cursor: pointer; transition: border-color 0.2s; position: relative; }
+.card-pile:hover { border-color: var(--accent2); }
+.playing-card { width: 58px; min-height: 84px; background: #f8f6f0; border-radius: var(--r2); border: 1px solid rgba(0,0,0,0.1); display: flex; flex-direction: column; padding: 5px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.35); user-select: none; position: relative; }
+.playing-card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.5); }
+.playing-card.selected { box-shadow: 0 0 16px var(--glow), 0 6px 16px rgba(0,0,0,0.5); outline: 2px solid var(--accent); }
+.card-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; line-height: 1; }
+.card-suit { font-size: 20px; text-align: center; margin: auto; }
+.card-back { background: linear-gradient(135deg, var(--accent) 0%, #3a2a8a 100%); }
+.playing-card.red .card-val, .playing-card.red .card-suit { color: #c0392b; }
+.playing-card.black .card-val, .playing-card.black .card-suit { color: #1a1a2e; }
+.solitaire-columns { display: flex; gap: 8px; }
+.solitaire-col { flex: 1; position: relative; }
+
+/* MODE SELECTOR */
+.mode-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+.mode-btn { flex: 1; padding: 12px; background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--r); cursor: pointer; text-align: center; transition: all 0.2s; color: var(--text2); font-size: 12px; font-weight: 500; }
+.mode-btn:hover { border-color: var(--accent); color: var(--accent2); }
+.mode-btn.selected { border-color: var(--accent); background: var(--glow); color: var(--accent2); }
+.mode-icon { font-size: 24px; margin-bottom: 6px; }
+
+/* RESULT */
+.result-card { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--r); padding: 32px; max-width: 420px; width: 100%; text-align: center; }
+.result-emoji { font-size: 60px; margin-bottom: 12px; }
+.result-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.result-score { font-size: 13px; color: var(--text2); margin-bottom: 22px; }
+.result-xp { color: var(--gold2); font-weight: 600; }
+.result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
+.rs-item { background: var(--bg3); border-radius: var(--r2); padding: 12px; }
+.rs-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+.rs-lbl { font-size: 10px; color: var(--text3); margin-top: 3px; }
+.btn-primary { background: var(--accent); border: none; color: white; padding: 11px 24px; border-radius: var(--r2); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin: 0 5px; font-family: 'DM Sans', sans-serif; }
+.btn-primary:hover { background: var(--accent2); transform: scale(1.02); }
+.btn-secondary { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); padding: 11px 24px; border-radius: var(--r2); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; margin: 0 5px; }
+.btn-secondary:hover { color: var(--text); background: var(--bg4); }
+
+/* DASHBOARD */
+.chart-container { height: 160px; display: flex; align-items: flex-end; gap: 6px; padding: 0 0 8px; }
+.chart-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+.chart-bar { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.6s ease; min-height: 4px; cursor: pointer; position: relative; }
+.chart-bar:hover::after { content: attr(data-val); position: absolute; top: -22px; left: 50%; transform: translateX(-50%); background: var(--bg4); border: 1px solid var(--border2); padding: 2px 6px; border-radius: 4px; font-size: 10px; white-space: nowrap; color: var(--text); }
+.chart-label { font-size: 10px; color: var(--text3); text-align: center; }
+.category-progress { display: flex; flex-direction: column; gap: 10px; }
+.cat-prog-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.cat-prog-name { width: 80px; color: var(--text2); font-size: 11px; }
+.cat-prog-bar { flex: 1; height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+.cat-prog-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+.cat-prog-val { width: 35px; text-align: right; color: var(--text3); font-size: 11px; font-family: 'Syne', sans-serif; }
+
+/* NOTIFICATION */
+.notification { position: fixed; top: 16px; right: 16px; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r); padding: 12px 16px; font-size: 13px; font-weight: 500; color: var(--text); z-index: 9999; display: flex; align-items: center; gap: 10px; transform: translateX(120%); transition: transform 0.3s ease; max-width: 280px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+.notification.show { transform: translateX(0); }
+.notif-icon { font-size: 18px; }
+
+/* SCREENS */
+.screen-fade { animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 4px; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .games-grid { grid-template-columns: repeat(2,1fr); }
+  .game-hud { gap: 6px; }
+}
+@media (max-width: 640px) {
+  .sidebar { width: 180px; min-width: 180px; }
+  .games-grid { grid-template-columns: 1fr 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🧠</div>
+    <span>MindGames</span>
+  </div>
+
+  <div class="player-card">
+    <div class="player-avatar" id="player-avatar">MG</div>
+    <div class="player-name" id="player-name-display">Joueur</div>
+    <div class="player-rank" id="player-rank">⭐ Novice</div>
+    <div class="xp-bar-wrap"><div class="xp-bar" id="xp-bar-fill" style="width:0%"></div></div>
+    <div class="xp-label" id="xp-label">0 / 500 XP</div>
+  </div>
+
+  <div class="nav-section" id="ns-menu">MENU</div>
+  <div class="nav-item active" data-nav="home"><span class="nav-icon">🏠</span><span id="n-home">Accueil</span></div>
+  <div class="nav-item" data-nav="dashboard"><span class="nav-icon">📊</span><span id="n-stats">Statistiques</span></div>
+  <div class="nav-item" data-nav="leaderboard"><span class="nav-icon">🏆</span><span id="n-rank">Classement</span><span class="nav-badge">Live</span></div>
+
+  <div class="nav-section" id="ns-games">JEUX</div>
+  <div class="nav-item" data-nav="memory_cards"><span class="nav-icon">🔮</span><span>Mémoire</span></div>
+  <div class="nav-item" data-nav="iq"><span class="nav-icon">🧩</span><span>QI / Logique</span></div>
+  <div class="nav-item" data-nav="qe"><span class="nav-icon">💡</span><span>QE / Émotions</span></div>
+  <div class="nav-item" data-nav="chess"><span class="nav-icon">♟️</span><span>Échecs</span></div>
+  <div class="nav-item" data-nav="solitaire"><span class="nav-icon">🃏</span><span>Solitaire</span></div>
+
+  <div class="sidebar-footer">
+    <div style="font-size:10px;color:var(--text3);text-align:center;margin-bottom:8px" id="footer-text">Progression sauvegardée</div>
+    <div style="display:flex;justify-content:center;gap:8px;">
+      <div class="btn-icon" title="Profil" onclick="showProfile()">👤</div>
+      <div class="btn-icon" title="Réinitialiser" onclick="resetData()" title="Reset">🗑️</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="breadcrumb">
+      <span id="bc-home">Accueil</span>
+      <span class="sep" id="bc-sep" style="display:none">›</span>
+      <span class="current" id="bc-current"></span>
+    </div>
+    <div class="topbar-actions">
+      <div class="btn-icon" onclick="goBack()" id="back-arrow" style="display:none" title="Retour">←</div>
+      <div class="lang-toggle" id="lang-btn" onclick="toggleLang()">FR / EN</div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="content screen-fade" id="home-screen">
+    <div class="page-title" id="home-title">Bienvenue 👋</div>
+    <div class="page-subtitle" id="home-sub">Entraînez votre esprit. Montez en niveau. Battez vos records.</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Parties jouées</div><div class="stat-value" id="sv-total">0</div><div class="stat-delta up" id="sd-total">Commencez!</div></div>
+      <div class="stat-card"><div class="stat-label">Meilleur score</div><div class="stat-value" id="sv-best">—</div><div class="stat-sub" style="color:var(--text3)">Tous jeux</div></div>
+      <div class="stat-card"><div class="stat-label">Série actuelle</div><div class="stat-value" id="sv-streak">0 🔥</div><div class="stat-sub" style="color:var(--text3)">jours consécutifs</div></div>
+      <div class="stat-card"><div class="stat-label">Mon rang</div><div class="stat-value" id="sv-rank" style="font-size:16px">Novice</div><div class="stat-delta up" id="sd-rank">Level 1</div></div>
+    </div>
+    <div class="section-header"><div class="section-title" id="st-games">🎮 Tous les Jeux</div></div>
+    <div class="category-tabs" id="cat-tabs">
+      <div class="cat-tab active" data-cat="all">Tous</div>
+      <div class="cat-tab" data-cat="memory">🔮 Mémoire</div>
+      <div class="cat-tab" data-cat="iq">🧩 QI</div>
+      <div class="cat-tab" data-cat="qe">💡 QE</div>
+      <div class="cat-tab" data-cat="chess">♟️ Stratégie</div>
+      <div class="cat-tab" data-cat="cards">🃏 Cartes</div>
+    </div>
+    <div class="games-grid" id="games-grid"></div>
+    <div class="two-col">
+      <div class="panel"><div class="panel-title">🏅 Badges récents</div><div class="badges-grid" id="badges-container"></div></div>
+      <div class="panel"><div class="panel-title" id="pt-lb">🏆 Top 5 Joueurs</div><div id="mini-leaderboard"></div></div>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" style="display:none;flex-direction:column;height:calc(100vh - 54px)">
+    <div class="game-header">
+      <button class="back-btn" onclick="goBack()">← <span id="back-label">Retour</span></button>
+      <div class="game-title-bar"><h2 id="game-title-bar">Jeu</h2><span id="game-subtitle-bar">Mode solo</span></div>
+      <div class="game-hud">
+        <div class="hud-item"><span class="hud-label" id="hl-score">Score</span><span id="hud-score">0</span></div>
+        <div class="hud-item"><span class="hud-label" id="hl-time">Temps</span><span id="hud-timer">—</span></div>
+        <div class="hud-item"><span class="hud-label" id="hl-combo">Combo</span><span id="hud-combo" style="color:var(--gold2)">x1</span></div>
+      </div>
+    </div>
+    <div class="game-area" id="game-area"></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="content screen-fade" id="dashboard-screen" style="display:none">
+    <div class="page-title">📊 <span id="dash-title">Tableau de Bord</span></div>
+    <div class="page-subtitle" id="dash-sub">Analyse détaillée de votre progression</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">XP Total</div><div class="stat-value" id="dash-xp" style="color:var(--gold2)">0</div><div class="stat-delta up">Points d'expérience</div></div>
+      <div class="stat-card"><div class="stat-label">Taux de réussite</div><div class="stat-value" id="dash-win">0%</div><div class="stat-delta up">Victoires / Parties</div></div>
+      <div class="stat-card"><div class="stat-label">Temps de jeu</div><div class="stat-value" id="dash-time">0m</div><div class="stat-sub" style="color:var(--text3)">Total</div></div>
+      <div class="stat-card"><div class="stat-label">Jeux explorés</div><div class="stat-value" id="dash-complete">0</div><div class="stat-sub" style="color:var(--text3)">Sur 10 jeux</div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel"><div class="panel-title">📈 <span id="dash-weekly">Activité hebdomadaire</span></div><div class="chart-container" id="weekly-chart"></div></div>
+      <div class="panel"><div class="panel-title">🎯 <span id="dash-cats">Maîtrise par catégorie</span></div><div class="category-progress" id="cat-progress"></div></div>
+    </div>
+    <div class="panel"><div class="panel-title">🏅 Tous les Badges</div><div class="badges-grid" id="all-badges-container" style="gap:12px"></div></div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="content screen-fade" id="leaderboard-screen" style="display:none">
+    <div class="page-title">🏆 <span id="lb-title">Classement Global</span></div>
+    <div class="page-subtitle" id="lb-sub">Compétition en temps réel</div>
+    <div class="panel" id="full-leaderboard"></div>
+  </div>
+</div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notif"><span class="notif-icon" id="notif-icon">🎉</span><span id="notif-msg">Message</span></div>
+
+<script>
+// ===== STATE & STORAGE =====
+let DB = {};
+const SAVE_KEY = 'mindgames_pro_v3';
+
+const RANKS = [
+  {name:'Novice', nameEN:'Novice', xp:0, level:1, icon:'⭐'},
+  {name:'Apprenti', nameEN:'Apprentice', xp:500, level:5, icon:'🌟'},
+  {name:'Explorateur', nameEN:'Explorer', xp:1500, level:15, icon:'🔥'},
+  {name:'Expert', nameEN:'Expert', xp:3500, level:35, icon:'💎'},
+  {name:'Maître', nameEN:'Master', xp:7000, level:70, icon:'👑'},
+  {name:'Légende', nameEN:'Legend', xp:15000, level:100, icon:'🏆'},
+];
+
+function loadDB() {
+  try {
+    const d = localStorage.getItem(SAVE_KEY);
+    DB = d ? JSON.parse(d) : freshDB();
+  } catch(e) { DB = freshDB(); }
+}
+
+function freshDB() {
+  return { name:'Joueur', lang:'fr', xp:0, level:1, totalGames:0, totalWins:0, streak:0, lastPlay:null, gameStats:{}, weeklyXP:[0,0,0,0,0,0,0], badges:[], playTime:0 };
+}
+
+function saveDB() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(DB)); } catch(e) {} }
+
+function addXP(amount, gameId) {
+  DB.xp += amount;
+  DB.level = getLevel();
+  if (!DB.gameStats[gameId]) DB.gameStats[gameId] = {played:0,wins:0,bestScore:0,xpEarned:0};
+  DB.gameStats[gameId].xpEarned += amount;
+  const day = new Date().getDay();
+  DB.weeklyXP[day] = (DB.weeklyXP[day]||0) + amount;
+  checkBadges(); saveDB(); updateSidebar();
+  showNotif('⚡', `+${amount} XP gagné${amount>1?'s':''}!`);
+}
+
+function recordWin(gameId) {
+  DB.totalGames++; DB.totalWins++;
+  if (!DB.gameStats[gameId]) DB.gameStats[gameId] = {played:0,wins:0,bestScore:0,xpEarned:0};
+  DB.gameStats[gameId].played++; DB.gameStats[gameId].wins++;
+  updateStreak(); saveDB();
+}
+
+function recordLoss(gameId) {
+  DB.totalGames++;
+  if (!DB.gameStats[gameId]) DB.gameStats[gameId] = {played:0,wins:0,bestScore:0,xpEarned:0};
+  DB.gameStats[gameId].played++;
+  updateStreak(); saveDB();
+}
+
+function updateBestScore(gameId, score) {
+  if (!DB.gameStats[gameId]) DB.gameStats[gameId] = {played:0,wins:0,bestScore:0,xpEarned:0};
+  if (score > DB.gameStats[gameId].bestScore) { DB.gameStats[gameId].bestScore = score; saveDB(); }
+}
+
+function updateStreak() {
+  const today = new Date().toDateString();
+  if (DB.lastPlay === today) return;
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  DB.streak = DB.lastPlay === yesterday ? DB.streak+1 : 1;
+  DB.lastPlay = today; saveDB();
+}
+
+function getLevel() { return Math.floor(Math.sqrt(DB.xp / 50)) + 1; }
+
+function getRank() {
+  let rank = RANKS[0];
+  for (const r of RANKS) { if (DB.xp >= r.xp) rank = r; }
+  return rank;
+}
+
+function getXPForNextLevel() {
+  const cur = DB.level;
+  return { cur:(cur-1)*(cur-1)*50, next:cur*cur*50, xp:DB.xp };
+}
+
+const ALL_BADGES = [
+  {id:'first_game', icon:'🎮', name:'Premier Jeu', nameEN:'First Game'},
+  {id:'wins5', icon:'🏅', name:'5 Victoires', nameEN:'5 Wins'},
+  {id:'wins25', icon:'🥈', name:'25 Victoires', nameEN:'25 Wins'},
+  {id:'xp1000', icon:'💰', name:'1000 XP', nameEN:'1000 XP'},
+  {id:'streak3', icon:'🔥', name:'Série x3', nameEN:'3-day Streak'},
+  {id:'streak7', icon:'⚡', name:'Série x7', nameEN:'7-day Streak'},
+  {id:'explorer', icon:'🗺️', name:'Explorateur', nameEN:'Explorer'},
+  {id:'master', icon:'👑', name:'Niveau 10', nameEN:'Level 10'},
+];
+
+function checkBadges() {
+  const checks = [
+    {id:'first_game', cond:DB.totalGames>=1},
+    {id:'wins5', cond:DB.totalWins>=5},
+    {id:'wins25', cond:DB.totalWins>=25},
+    {id:'xp1000', cond:DB.xp>=1000},
+    {id:'streak3', cond:DB.streak>=3},
+    {id:'streak7', cond:DB.streak>=7},
+    {id:'explorer', cond:Object.keys(DB.gameStats).length>=3},
+    {id:'master', cond:DB.level>=10},
+  ];
+  checks.forEach(b => {
+    if (b.cond && !DB.badges.includes(b.id)) {
+      DB.badges.push(b.id);
+      const badge = ALL_BADGES.find(x=>x.id===b.id);
+      if (badge) showNotif('🏅', `Badge: ${LANG==='en'?badge.nameEN:badge.name}!`);
+    }
+  });
+}
+
+// ===== LANGUAGE =====
+let LANG = 'fr';
+const T = {
+  fr: { welcome:'Bienvenue 👋', welcomeSub:'Entraînez votre esprit. Montez en niveau. Battez vos records.', home:'Accueil', stats:'Statistiques', rank:'Classement', allGames:'🎮 Tous les Jeux', back:'Retour', play:'JOUER', solo:'Solo', vsAI:'vs IA', multi:'Multijoueur', score:'Score', time:'Temps', combo:'Combo', weeklyAct:'Activité hebdomadaire', catMastery:'Maîtrise par catégorie', lbTitle:'Classement Global', lbSub:'Compétition en temps réel', dashTitle:'Tableau de Bord', dashSub:'Analyse détaillée de votre progression', footerSave:'Progression sauvegardée', menu:'MENU', games:'JEUX', topPlayers:'🏆 Top 5 Joueurs' },
+  en: { welcome:'Welcome 👋', welcomeSub:'Train your mind. Level up. Beat your records.', home:'Home', stats:'Statistics', rank:'Leaderboard', allGames:'🎮 All Games', back:'Back', play:'PLAY', solo:'Solo', vsAI:'vs AI', multi:'Multiplayer', score:'Score', time:'Time', combo:'Combo', weeklyAct:'Weekly Activity', catMastery:'Category Mastery', lbTitle:'Global Leaderboard', lbSub:'Real-time competition', dashTitle:'Dashboard', dashSub:'Detailed progression analysis', footerSave:'Progress saved', menu:'MENU', games:'GAMES', topPlayers:'🏆 Top 5 Players' }
+};
+
+function t(key) { return (T[LANG]||T.fr)[key]||key; }
+
+function toggleLang() {
+  LANG = LANG==='fr'?'en':'fr'; DB.lang = LANG; saveDB(); applyLang();
+}
+
+function applyLang() {
+  const ids = [['home-title','welcome'],['home-sub','welcomeSub'],['n-home','home'],['n-stats','stats'],['n-rank','rank'],['st-games','allGames'],['back-label','back'],['hl-score','score'],['hl-time','time'],['hl-combo','combo'],['dash-weekly','weeklyAct'],['dash-cats','catMastery'],['lb-title','lbTitle'],['lb-sub','lbSub'],['dash-title','dashTitle'],['dash-sub','dashSub'],['footer-text','footerSave'],['ns-menu','menu'],['ns-games','games'],['pt-lb','topPlayers'],['bc-home','home']];
+  ids.forEach(([id,key])=>{ const el=document.getElementById(id); if(el) el.textContent=t(key); });
+  updateSidebar();
+}
+
+// ===== NAVIGATION =====
+let navHistory = ['home'];
+let currentScreen = 'home';
+let currentGame = null;
+let gameState = {};
+let timerInterval = null;
+let combo = 1;
+let gameScore = 0;
+let selectedMode = 'solo';
+
+function showScreen(id) {
+  ['home-screen','game-screen','dashboard-screen','leaderboard-screen'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) { el.style.display = 'none'; }
+  });
+  const el = document.getElementById(id);
+  if (el) { el.style.display = id==='game-screen'?'flex':'block'; }
+}
+
+function navigate(page, addHistory=true) {
+  clearInterval(timerInterval);
+  if (addHistory && page !== currentScreen) navHistory.push(currentScreen);
+  currentScreen = page;
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.nav===page));
+  const bc = document.getElementById('bc-current');
+  const sep = document.getElementById('bc-sep');
+  const ba = document.getElementById('back-arrow');
+
+  if (page==='home') {
+    bc.textContent=''; sep.style.display='none'; ba.style.display='none';
+    showScreen('home-screen');
+    renderGamesGrid(); renderMiniLeaderboard(); renderBadges('badges-container',6); updateHomeStats();
+  } else if (page==='dashboard') {
+    bc.textContent=t('dashTitle'); sep.style.display=''; ba.style.display='';
+    showScreen('dashboard-screen'); renderDashboard();
+  } else if (page==='leaderboard') {
+    bc.textContent=t('lbTitle'); sep.style.display=''; ba.style.display='';
+    showScreen('leaderboard-screen'); renderFullLeaderboard();
+  } else {
+    const game = GAMES.find(g=>g.id===page);
+    if (game) launchGameMenu(game);
+  }
+  document.getElementById('bc-home').textContent=t('home');
+}
+
+function goBack() {
+  clearInterval(timerInterval);
+  if (navHistory.length>0) navigate(navHistory.pop(), false);
+  else navigate('home', false);
+}
+
+// ===== GAMES DATA =====
+const GAMES = [
+  {id:'memory_cards', cat:'memory', name:'Mémoire Classique', nameEN:'Classic Memory', icon:'🔮', color:'#6c63ff', bg:'linear-gradient(135deg,#1a1240,#3a2a8a)', xpReward:80, badge:'hot', desc:'Retournez les paires'},
+  {id:'memory_seq', cat:'memory', name:'Simon Says', nameEN:'Simon Says', icon:'💫', color:'#4caf7d', bg:'linear-gradient(135deg,#0d2b1e,#1a5c3e)', xpReward:60, badge:'', desc:'Répétez la séquence'},
+  {id:'iq', cat:'iq', name:'QI Express', nameEN:'IQ Express', icon:'🧩', color:'#c9a84c', bg:'linear-gradient(135deg,#2b1f0a,#5c3f10)', xpReward:120, badge:'hot', desc:'Séquences logiques'},
+  {id:'speed', cat:'iq', name:'Calcul Rapide', nameEN:'Speed Math', icon:'⚡', color:'#e8c96a', bg:'linear-gradient(135deg,#201800,#4a3800)', xpReward:75, badge:'new', desc:'Calcul mental'},
+  {id:'qe', cat:'qe', name:'Émotions QE', nameEN:'EQ Emotions', icon:'💡', color:'#e05c5c', bg:'linear-gradient(135deg,#2b0d0d,#5c1e1e)', xpReward:70, badge:'', desc:'Reconnais les émotions'},
+  {id:'empathy', cat:'qe', name:'Empathie+', nameEN:'Empathy+', icon:'🤝', color:'#e05c5c', bg:'linear-gradient(135deg,#2a0a10,#601a25)', xpReward:90, badge:'new', desc:'Scénarios sociaux'},
+  {id:'chess', cat:'chess', name:'Échecs', nameEN:'Chess', icon:'♟️', color:'#8a9bb5', bg:'linear-gradient(135deg,#0d1520,#1e2d40)', xpReward:200, badge:'hot', desc:'Stratégie profonde'},
+  {id:'solitaire', cat:'cards', name:'Solitaire', nameEN:'Solitaire', icon:'🃏', color:'#4caf7d', bg:'linear-gradient(135deg,#0a2015,#1a4030)', xpReward:100, badge:'', desc:'Klondike classique'},
+  {id:'spatial', cat:'memory', name:'Mémoire Spatiale', nameEN:'Spatial Memory', icon:'🗺️', color:'#6c63ff', bg:'linear-gradient(135deg,#120a2a,#2a1860)', xpReward:85, badge:'', desc:'Positions sur la grille'},
+  {id:'pattern', cat:'iq', name:'Matrices', nameEN:'Matrices', icon:'⬛', color:'#9f97ff', bg:'linear-gradient(135deg,#151030,#3a3585)', xpReward:90, badge:'new', desc:'Patterns logiques'},
+];
+
+const FAKE_PLAYERS = [
+  {name:'Alex M.', xp:8450, avatar:'AM', color:'#6c63ff'},
+  {name:'Laure D.', xp:7210, avatar:'LD', color:'#c9a84c'},
+  {name:'Sam K.', xp:6890, avatar:'SK', color:'#4caf7d'},
+  {name:'Mia R.', xp:5430, avatar:'MR', color:'#e05c5c'},
+  {name:'Chris T.', xp:4200, avatar:'CT', color:'#9f97ff'},
+  {name:'Youss F.', xp:3100, avatar:'YF', color:'#4caf7d'},
+  {name:'Nina P.', xp:2400, avatar:'NP', color:'#c9a84c'},
+  {name:'Jake B.', xp:1800, avatar:'JB', color:'#9f97ff'},
+  {name:'Sara L.', xp:1200, avatar:'SL', color:'#e05c5c'},
+];
+
+// ===== SIDEBAR & HOME =====
+function updateSidebar() {
+  const rank = getRank();
+  const xpInfo = getXPForNextLevel();
+  const pct = Math.min(100, Math.round((xpInfo.xp-xpInfo.cur)/(xpInfo.next-xpInfo.cur)*100));
+  document.getElementById('player-name-display').textContent = DB.name;
+  document.getElementById('player-rank').textContent = `${rank.icon} ${LANG==='en'?rank.nameEN:rank.name}`;
+  document.getElementById('xp-bar-fill').style.width = pct+'%';
+  document.getElementById('xp-label').textContent = `${DB.xp} / ${xpInfo.next} XP`;
+  document.getElementById('player-avatar').textContent = DB.name.substring(0,2).toUpperCase();
+}
+
+function updateHomeStats() {
+  document.getElementById('sv-total').textContent = DB.totalGames;
+  const best = Object.values(DB.gameStats).reduce((m,g)=>Math.max(m,g.bestScore||0),0);
+  document.getElementById('sv-best').textContent = best>0?best:'—';
+  document.getElementById('sv-streak').textContent = DB.streak+' 🔥';
+  const rank = getRank();
+  document.getElementById('sv-rank').textContent = LANG==='en'?rank.nameEN:rank.name;
+  document.getElementById('sd-rank').textContent = 'Level '+DB.level;
+}
+
+function renderGamesGrid(catFilter='all') {
+  const grid = document.getElementById('games-grid');
+  const filtered = catFilter==='all'?GAMES:GAMES.filter(g=>g.cat===catFilter);
+  grid.innerHTML = filtered.map(g=>{
+    const gs = DB.gameStats[g.id];
+    const lvl = gs?Math.min(5,Math.floor(gs.played/2)):0;
+    const dots = [1,2,3,4,5].map(i=>`<div class="dot ${i<=lvl?'filled':''}"></div>`).join('');
+    const badge = g.badge?`<div class="game-badge ${g.badge}">${g.badge.toUpperCase()}</div>`:'';
+    return `<div class="game-card" onclick="launchGameMenu(GAMES.find(x=>x.id==='${g.id}'))">
+      <div class="game-banner" style="background:${g.bg}">${badge}<span style="font-size:38px;position:relative;z-index:1">${g.icon}</span></div>
+      <div class="game-body">
+        <div class="game-name">${LANG==='en'?g.nameEN:g.name}</div>
+        <div class="game-type">${g.desc}</div>
+        <div class="game-meta">
+          <div class="game-level"><div class="level-dots">${dots}</div></div>
+          <button class="play-btn" onclick="event.stopPropagation();launchGameMenu(GAMES.find(x=>x.id==='${g.id}'))">${t('play')}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMiniLeaderboard() {
+  const lb = document.getElementById('mini-leaderboard');
+  const all = [{name:DB.name,xp:DB.xp,avatar:DB.name.substring(0,2).toUpperCase(),color:'#6c63ff',isMe:true},...FAKE_PLAYERS.slice(0,4)];
+  all.sort((a,b)=>b.xp-a.xp);
+  const icons=['gold','silver','bronze','',''];
+  lb.innerHTML = all.slice(0,5).map((p,i)=>`
+    <div class="lb-row" style="${p.isMe?'background:rgba(108,99,255,0.08);border-radius:8px;':''}">
+      <div class="lb-rank ${icons[i]}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+      <div class="lb-ava" style="background:${p.color}22;color:${p.color}">${p.avatar||p.name.substring(0,2)}</div>
+      <div class="lb-name">${p.name}${p.isMe?' (Moi)':''}</div>
+      <div class="lb-score">${p.xp.toLocaleString()}</div>
+    </div>`).join('');
+}
+
+function renderBadges(containerId, maxShow=999) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  ALL_BADGES.slice(0,maxShow).forEach(b=>{
+    const div = document.createElement('div');
+    div.className = 'badge-item'+(DB.badges.includes(b.id)?'':' locked');
+    div.title = LANG==='en'?b.nameEN:b.name;
+    div.innerHTML = `<div class="badge-icon">${b.icon}</div><div class="badge-name">${LANG==='en'?b.nameEN:b.name}</div>`;
+    el.appendChild(div);
+  });
+}
+
+// ===== GAME LAUNCHER =====
+function launchGameMenu(game) {
+  if (!game) return;
+  currentGame = game;
+  if (currentScreen!=='game_menu') navHistory.push(currentScreen);
+  currentScreen = 'game_menu_'+game.id;
+  selectedMode = 'solo';
+
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('bc-sep').style.display='';
+  document.getElementById('bc-current').textContent = LANG==='en'?game.nameEN:game.name;
+  document.getElementById('back-arrow').style.display='';
+  document.getElementById('game-title-bar').textContent = LANG==='en'?game.nameEN:game.name;
+  document.getElementById('game-subtitle-bar').textContent = LANG==='fr'?'Choisir un mode':'Choose a mode';
+  document.getElementById('hud-score').textContent='0';
+  document.getElementById('hud-timer').textContent='—';
+  document.getElementById('hud-combo').textContent='x1';
+  showScreen('game-screen');
+
+  const gs = DB.gameStats[game.id];
+  const area = document.getElementById('game-area');
+  area.innerHTML = `
+    <div style="max-width:460px;width:100%;text-align:center;padding:20px 0">
+      <div style="font-size:60px;margin-bottom:12px">${game.icon}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px">${LANG==='en'?game.nameEN:game.name}</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:24px">${game.desc}</div>
+      <div class="mode-selector">
+        <div class="mode-btn selected" onclick="selectMode('solo',this)"><div class="mode-icon">👤</div><div>${t('solo')}</div></div>
+        <div class="mode-btn" onclick="selectMode('ai',this)"><div class="mode-icon">🤖</div><div>${t('vsAI')}</div></div>
+        <div class="mode-btn" onclick="selectMode('multi',this)"><div class="mode-icon">👥</div><div>${t('multi')}</div></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:10px">
+        <button class="btn-primary" onclick="startGame('${game.id}')">▶ ${LANG==='fr'?'Lancer la Partie':'Start Game'}</button>
+        <button class="btn-secondary" onclick="goBack()">✕ ${LANG==='fr'?'Annuler':'Cancel'}</button>
+      </div>
+      ${gs?`<div style="margin-top:18px;font-size:12px;color:var(--text3)">
+        ${LANG==='fr'?'Meilleur score':'Best score'}: <span style="color:var(--gold2);font-weight:700">${gs.bestScore||0}</span> &nbsp;|&nbsp;
+        ${LANG==='fr'?'Parties':'Games'}: ${gs.played||0} &nbsp;|&nbsp; ✓ ${gs.wins||0}
+      </div>`:''}
+    </div>`;
+}
+
+function selectMode(mode, el) {
+  selectedMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ===== START GAME =====
+function startGame(gameId) {
+  clearInterval(timerInterval);
+  gameScore = 0; combo = 1;
+  document.getElementById('hud-score').textContent='0';
+  document.getElementById('hud-combo').textContent='x1';
+  const modeLabel = selectedMode==='ai'?(LANG==='fr'?'vs IA':'vs AI'):selectedMode==='multi'?(LANG==='fr'?'Multijoueur':'Multiplayer'):'Solo';
+  document.getElementById('game-subtitle-bar').textContent = `Mode: ${modeLabel}`;
+
+  if (['memory_cards','memory_seq','spatial'].includes(gameId)) startMemoryGame(gameId);
+  else if (['iq','speed','pattern'].includes(gameId)) startIQGame(gameId);
+  else if (['qe','empathy'].includes(gameId)) startQEGame(gameId);
+  else if (gameId==='chess') startChessGame();
+  else if (gameId==='solitaire') startSolitaireGame();
+  else startMemoryGame(gameId);
+}
+
+function startTimer(seconds) {
+  let remaining = seconds;
+  document.getElementById('hud-timer').textContent = remaining+'s';
+  timerInterval = setInterval(()=>{
+    remaining--;
+    document.getElementById('hud-timer').textContent = remaining+'s';
+    if (remaining<=0) { clearInterval(timerInterval); endGame(gameScore,false,currentGame.id); }
+  },1000);
+}
+
+function addScore(pts) {
+  gameScore += pts*combo;
+  document.getElementById('hud-score').textContent = gameScore;
+  combo = Math.min(10,combo+1);
+  document.getElementById('hud-combo').textContent = 'x'+combo;
+}
+
+function endGame(score, won, gameId) {
+  clearInterval(timerInterval);
+  updateBestScore(gameId, score);
+  if (won) recordWin(gameId); else recordLoss(gameId);
+  const xpEarned = Math.max(10, Math.round((currentGame.xpReward*(won?1:0.3))+score/10));
+  addXP(xpEarned, gameId);
+  const area = document.getElementById('game-area');
+  area.innerHTML = `
+    <div class="result-card screen-fade">
+      <div class="result-emoji">${won?'🎉':'😤'}</div>
+      <div class="result-title">${won?(LANG==='fr'?'Victoire!':'Victory!'):(LANG==='fr'?'Bonne Tentative!':'Good Try!')}</div>
+      <div class="result-score">${LANG==='fr'?'Score':'Score'}: <strong>${score}</strong> &nbsp;|&nbsp; <span class="result-xp">+${xpEarned} XP</span></div>
+      <div class="result-stats">
+        <div class="rs-item"><div class="rs-val" style="color:var(--gold2)">${score}</div><div class="rs-lbl">Score</div></div>
+        <div class="rs-item"><div class="rs-val" style="color:${won?'var(--success)':'var(--danger)'}">${won?'✓ Win':'✗ Loss'}</div><div class="rs-lbl">Résultat</div></div>
+        <div class="rs-item"><div class="rs-val" style="color:var(--accent2)">+${xpEarned}</div><div class="rs-lbl">XP</div></div>
+      </div>
+      <button class="btn-primary" onclick="startGame('${gameId}')">🔄 ${LANG==='fr'?'Rejouer':'Play Again'}</button>
+      <button class="btn-secondary" onclick="goBack()">🏠 Menu</button>
+    </div>`;
+}
+
+// ===== MEMORY GAME =====
+const MEMORY_EMOJIS = ['🦊','🐬','🦋','🌸','🎯','🔮','🏆','⚡','🎭','🦄','🌈','🎸'];
+
+function startMemoryGame(gameId) {
+  const count = gameId==='spatial'?6:8;
+  const emojis = MEMORY_EMOJIS.slice(0,count);
+  let cards = [...emojis,...emojis].sort(()=>Math.random()-0.5).map((e,i)=>({id:i,emoji:e,flipped:false,matched:false}));
+  gameState = {cards,flipped:[],matches:0,moves:0,total:count};
+  startTimer(90);
+  renderMemory();
+}
+
+function renderMemory() {
+  const {cards,moves,matches,total} = gameState;
+  const cols = Math.ceil(Math.sqrt(cards.length));
+  document.getElementById('game-area').innerHTML = `
+    <div style="text-align:center;margin-bottom:10px;font-size:13px;color:var(--text2)">
+      Moves: <strong style="color:var(--text)">${moves}</strong> &nbsp;|&nbsp; Paires: <strong style="color:var(--gold2)">${matches}/${total}</strong>
+    </div>
+    <div class="memory-grid" style="grid-template-columns:repeat(${cols},72px)">
+      ${cards.map(c=>`
+        <div class="mem-card ${c.flipped?'flipped':''} ${c.matched?'matched':''}" onclick="flipCard(${c.id})">
+          <span>${c.matched||c.flipped?c.emoji:'🔲'}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+function flipCard(id) {
+  const {cards,flipped} = gameState;
+  if (flipped.length>=2) return;
+  const card = cards[id];
+  if (card.flipped||card.matched) return;
+  card.flipped=true; gameState.flipped.push(id); gameState.moves++;
+  renderMemory();
+  if (gameState.flipped.length===2) {
+    const [a,b] = gameState.flipped.map(i=>cards[i]);
+    setTimeout(()=>{
+      if (a.emoji===b.emoji) {
+        a.matched=b.matched=true; gameState.matches++; gameState.flipped=[];
+        addScore(100); renderMemory();
+        if (gameState.matches===gameState.total) { clearInterval(timerInterval); setTimeout(()=>endGame(gameScore,true,currentGame.id),500); }
+      } else {
+        a.flipped=b.flipped=false; gameState.flipped=[];
+        combo=Math.max(1,combo-1); document.getElementById('hud-combo').textContent='x'+combo;
+        renderMemory();
+      }
+    },800);
+  }
+}
+
+// ===== IQ GAME =====
+const IQ_QUESTIONS = [
+  {q:'Quelle est la suite logique?',qEN:'What comes next?',seq:[2,4,8,16,'?'],answer:32,options:[24,32,28,36],type:'seq'},
+  {q:'Complétez la série:',qEN:'Complete the series:',seq:[1,4,9,16,'?'],answer:25,options:[20,25,30,36],type:'seq'},
+  {q:'Trouvez le nombre manquant:',qEN:'Find the missing number:',seq:[3,6,12,24,'?'],answer:48,options:[36,48,42,50],type:'seq'},
+  {q:'Quelle valeur complète la suite?',qEN:'Which value completes the sequence?',seq:[5,10,17,26,'?'],answer:37,options:[35,37,39,33],type:'seq'},
+  {q:'Suivant dans la séquence:',qEN:'Next in the sequence:',seq:[0,1,1,2,3,5,'?'],answer:8,options:[7,8,9,10],type:'seq'},
+];
+const SPEED_QUESTIONS = [
+  {q:'15 × 7 = ?',qEN:'15 × 7 = ?',answer:105,options:[95,105,115,100]},
+  {q:'144 ÷ 12 = ?',qEN:'144 ÷ 12 = ?',answer:12,options:[11,12,13,14]},
+  {q:'23 + 47 = ?',qEN:'23 + 47 = ?',answer:70,options:[60,65,70,75]},
+  {q:'9² = ?',qEN:'9² = ?',answer:81,options:[72,81,90,63]},
+  {q:'8 × 9 = ?',qEN:'8 × 9 = ?',answer:72,options:[63,72,81,56]},
+];
+
+function startIQGame(gameId) {
+  const qs = gameId==='speed'?[...SPEED_QUESTIONS]:[...IQ_QUESTIONS];
+  gameState = {questions:qs,current:0,correct:0,answered:false,gameId};
+  startTimer(qs.length*(gameId==='speed'?8:20));
+  renderIQ();
+}
+
+function renderIQ() {
+  const {questions,current,correct,gameId} = gameState;
+  const q = questions[current];
+  if (!q) { clearInterval(timerInterval); endGame(gameScore,correct>=Math.ceil(questions.length*0.6),currentGame.id); return; }
+  const dots = questions.map((_,i)=>`<div class="q-dot ${i<current?'done':i===current?'current':''}"></div>`).join('');
+  const seqHTML = q.type==='seq'?`<div class="quiz-seq">${q.seq.map(n=>`<div class="seq-box ${n==='?'?'unknown':''}">${n==='?'?'?':n}</div>`).join('')}</div>`:'';
+  document.getElementById('game-area').innerHTML = `
+    <div class="quiz-container">
+      <div class="quiz-progress">${dots}</div>
+      <div class="quiz-question"><div>${LANG==='en'?q.qEN:q.q}</div>${seqHTML}</div>
+      <div class="quiz-options">${q.options.map(opt=>`<div class="quiz-opt" onclick="answerIQ(${opt},${q.answer})">${opt}</div>`).join('')}</div>
+      <div style="margin-top:12px;text-align:center;font-size:12px;color:var(--text3)">Q${current+1}/${questions.length} • ✓ ${correct}</div>
+    </div>`;
+}
+
+function answerIQ(chosen, correct) {
+  if (gameState.answered) return;
+  gameState.answered = true;
+  document.querySelectorAll('.quiz-opt').forEach(o=>{
+    const v=parseInt(o.textContent);
+    if(v===correct) o.classList.add('correct');
+    else if(v===chosen&&chosen!==correct) o.classList.add('wrong');
+  });
+  if (chosen===correct) { gameState.correct++; addScore(200); }
+  else { combo=Math.max(1,combo-1); document.getElementById('hud-combo').textContent='x'+combo; }
+  setTimeout(()=>{ gameState.current++; gameState.answered=false; renderIQ(); },900);
+}
+
+// ===== QE GAME =====
+const EMOTIONS = [
+  {face:'😤',q:'Cette personne ressent...',qEN:'This person feels...',opts:['Joie','Colère','Tristesse','Surprise'],optsEN:['Joy','Anger','Sadness','Surprise'],aIdx:1},
+  {face:'😢',q:'Quelle est cette émotion?',qEN:'What emotion is this?',opts:['Fierté','Dégoût','Tristesse','Peur'],optsEN:['Pride','Disgust','Sadness','Fear'],aIdx:2},
+  {face:'😲',q:'Comment se sent-il?',qEN:'How does this person feel?',opts:['Surprise','Honte','Colère','Calme'],optsEN:['Surprised','Shame','Anger','Calm'],aIdx:0},
+  {face:'😄',q:"Identifiez l'émotion:",qEN:'Identify the emotion:',opts:['Tristesse','Anxiété','Joie','Dégoût'],optsEN:['Sadness','Anxiety','Joy','Disgust'],aIdx:2},
+  {face:'😰',q:'Cette expression montre:',qEN:'This expression shows:',opts:['Joie','Anxiété','Fierté','Confiance'],optsEN:['Joy','Anxiety','Pride','Confidence'],aIdx:1},
+  {face:'😍',q:'Reconnaissez ce sentiment:',qEN:'Recognize this feeling:',opts:['Ennui','Tristesse','Admiration','Peur'],optsEN:['Boredom','Sadness','Admiration','Fear'],aIdx:2},
+];
+
+function startQEGame(gameId) {
+  const qs = [...EMOTIONS].sort(()=>Math.random()-0.5);
+  gameState = {questions:qs,current:0,correct:0,answered:false};
+  startTimer(60); renderQE();
+}
+
+function renderQE() {
+  const {questions,current,correct} = gameState;
+  const q = questions[current];
+  if (!q) { clearInterval(timerInterval); endGame(gameScore,correct>=3,currentGame.id); return; }
+  const opts = LANG==='en'?q.optsEN:q.opts;
+  document.getElementById('game-area').innerHTML = `
+    <div class="emotion-card screen-fade">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:16px">${current+1}/${questions.length} • ✓ ${correct}</div>
+      <div class="emotion-face">${q.face}</div>
+      <div class="emotion-question">${LANG==='en'?q.qEN:q.q}</div>
+      <div class="emotion-opts">${opts.map((o,i)=>`<div class="emo-opt" onclick="answerQE(${i},${q.aIdx})">${o}</div>`).join('')}</div>
+    </div>`;
+}
+
+function answerQE(chosen, correct) {
+  if (gameState.answered) return;
+  gameState.answered=true;
+  const opts = document.querySelectorAll('.emo-opt');
+  opts[correct].classList.add('correct');
+  if (chosen!==correct) opts[chosen].classList.add('wrong');
+  if (chosen===correct) { gameState.correct++; addScore(150); }
+  else { combo=Math.max(1,combo-1); document.getElementById('hud-combo').textContent='x'+combo; }
+  setTimeout(()=>{ gameState.current++; gameState.answered=false; renderQE(); },1000);
+}
+
+// ===== CHESS =====
+function startChessGame() {
+  const pieces = {
+    '00':'♜','10':'♞','20':'♝','30':'♛','40':'♚','50':'♝','60':'♞','70':'♜',
+    '01':'♟','11':'♟','21':'♟','31':'♟','41':'♟','51':'♟','61':'♟','71':'♟',
+    '06':'♙','16':'♙','26':'♙','36':'♙','46':'♙','56':'♙','66':'♙','76':'♙',
+    '07':'♖','17':'♘','27':'♗','37':'♕','47':'♔','57':'♗','67':'♘','77':'♖',
+  };
+  gameState = {pieces,selected:null,turn:'white',moves:0};
+  startTimer(300); renderChess();
+}
+
+function renderChess() {
+  const {pieces,selected} = gameState;
+  let html = `<div style="text-align:center;margin-bottom:12px;font-size:13px;color:var(--text2)">
+    ${LANG==='fr'?'Tour':'Turn'}: <strong style="color:var(--text)">${gameState.turn==='white'?'⬜ Blancs':'⬛ Noirs'}</strong>
+    &nbsp;|&nbsp; Coups: <strong style="color:var(--gold2)">${gameState.moves}</strong>
+  </div><div class="chess-board">`;
+  for (let row=0;row<8;row++) for (let col=0;col<8;col++) {
+    const key=col+''+row;
+    const piece=pieces[key]||'';
+    const isLight=(col+row)%2===0;
+    html+=`<div class="chess-cell ${isLight?'light':'dark-sq'} ${selected===key?'selected':''}" onclick="selectChessCell('${key}')">${piece}</div>`;
+  }
+  html+='</div><div style="text-align:center;margin-top:12px;font-size:11px;color:var(--text3)">'+(LANG==='fr'?'Cliquez sur une pièce pour la sélectionner':'Click a piece to select it')+'</div>';
+  html+=`<div style="text-align:center;margin-top:12px"><button class="btn-secondary" style="font-size:11px;padding:6px 14px" onclick="endGame(gameScore,true,'chess')">${LANG==='fr'?'Terminer la partie':'End Game'}</button></div>`;
+  document.getElementById('game-area').innerHTML = html;
+}
+
+function selectChessCell(key) {
+  const {pieces,selected} = gameState;
+  if (!selected) {
+    if (pieces[key]) { gameState.selected=key; renderChess(); }
+  } else {
+    if (key!==selected) {
+      pieces[key]=pieces[selected]; delete pieces[selected];
+      gameState.selected=null; gameState.moves++; gameState.turn=gameState.turn==='white'?'black':'white';
+      addScore(15);
+      if (gameState.turn==='black'&&selectedMode==='ai') setTimeout(aiChessMove,700);
+      else renderChess();
+    } else { gameState.selected=null; renderChess(); }
+  }
+}
+
+function aiChessMove() {
+  const {pieces} = gameState;
+  const bp = Object.entries(pieces).filter(([k,v])=>'♜♞♝♛♚♟'.includes(v));
+  if (!bp.length) return;
+  const [from] = bp[Math.floor(Math.random()*bp.length)];
+  const valid = [];
+  for (let c=0;c<8;c++) for(let r=0;r<8;r++) {
+    const k=c+''+r;
+    if (!'♜♞♝♛♚♟'.includes(pieces[k]||'')) valid.push(k);
+  }
+  if (valid.length) {
+    const to=valid[Math.floor(Math.random()*Math.min(valid.length,8))];
+    pieces[to]=pieces[from]; delete pieces[from];
+    gameState.moves++; gameState.turn='white';
+  }
+  renderChess();
+}
+
+// ===== SOLITAIRE =====
+function startSolitaireGame() {
+  const suits=['♠','♥','♦','♣'];
+  const vals=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  let deck = suits.flatMap(s=>vals.map(v=>({s,v,color:s==='♥'||s==='♦'?'red':'black'})));
+  deck.sort(()=>Math.random()-0.5);
+  const tableau = Array(7).fill(null).map((_,i)=>deck.splice(0,i+1));
+  gameState = {tableau,stock:deck,waste:[],foundations:[[],[],[],[]],selected:null,moves:0};
+  startTimer(900); renderSolitaire();
+}
+
+function renderSolitaire() {
+  const {tableau,stock,waste,foundations} = gameState;
+  const suits=['♠','♥','♦','♣'];
+  let html = '<div class="solitaire-area">';
+  html += '<div class="solitaire-top">';
+  html += `<div class="card-pile" onclick="drawSolitaire()" style="cursor:pointer;font-size:20px">${stock.length>0?'🂠':'♻️'}</div>`;
+  html += '<div class="card-pile">'+(waste.length>0?`<div class="playing-card ${waste[waste.length-1].color}"><div class="card-val">${waste[waste.length-1].v}</div><div class="card-suit">${waste[waste.length-1].s}</div></div>`:'')+'</div>';
+  html += '<div style="flex:1"></div>';
+  suits.forEach((s,i)=>{
+    const f=foundations[i];
+    html+=`<div class="card-pile" onclick="moveToFoundation(${i})">${f.length>0?`<div class="playing-card ${f[f.length-1].color}"><div class="card-val">${f[f.length-1].v}</div><div class="card-suit">${s}</div></div>`:`<span style="font-size:22px;opacity:0.3">${s}</span>`}</div>`;
+  });
+  html += '</div>';
+  html += '<div class="solitaire-columns">';
+  tableau.forEach((col,ci)=>{
+    const h = Math.max(100,(col.length*24+90));
+    html+=`<div class="solitaire-col" style="min-height:${h}px">`;
+    if (!col.length) html+=`<div class="card-pile" style="width:100%;height:88px" onclick="dropOnTableau(${ci})"></div>`;
+    col.forEach((card,ri)=>{
+      const isSel=gameState.selected&&gameState.selected.col===ci&&gameState.selected.ri===ri;
+      html+=`<div class="playing-card ${card.color} ${isSel?'selected':''}" style="position:absolute;top:${ri*24}px;z-index:${ri}" onclick="clickSolitaireCard(${ci},${ri})">
+        <div class="card-val">${card.v}</div><div class="card-suit">${card.s}</div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  html += '</div>';
+  html += `<div style="text-align:center;margin-top:16px;font-size:12px;color:var(--text3)">
+    Moves: ${gameState.moves} | Stock: ${stock.length} &nbsp;
+    <button class="btn-secondary" style="font-size:11px;padding:4px 12px" onclick="endGame(gameScore,foundations.reduce((s,f)=>s+f.length,0)>=52,'solitaire')">${LANG==='fr'?'Terminer':'End Game'}</button>
+  </div>`;
+  html += '</div>';
+  document.getElementById('game-area').innerHTML = html;
+}
+
+function drawSolitaire() {
+  if (gameState.stock.length>0) { gameState.waste.push(gameState.stock.pop()); addScore(5); }
+  else { gameState.stock=[...gameState.waste].reverse(); gameState.waste=[]; }
+  gameState.moves++; renderSolitaire();
+}
+
+function clickSolitaireCard(col,ri) {
+  if (gameState.selected&&gameState.selected.col===col&&gameState.selected.ri===ri) { gameState.selected=null; }
+  else if (gameState.selected) {
+    const src=gameState.selected;
+    const moving=gameState.tableau[src.col].splice(src.ri);
+    gameState.tableau[col].push(...moving);
+    gameState.selected=null; gameState.moves++; addScore(20);
+  } else { gameState.selected={col,ri}; }
+  renderSolitaire();
+}
+
+function moveToFoundation(fi) {
+  if (gameState.waste.length>0) { gameState.foundations[fi].push(gameState.waste.pop()); gameState.moves++; addScore(50); renderSolitaire(); }
+}
+
+function dropOnTableau(ci) {
+  if (gameState.selected) {
+    const src=gameState.selected;
+    const moving=gameState.tableau[src.col].splice(src.ri);
+    gameState.tableau[ci].push(...moving);
+    gameState.selected=null; gameState.moves++; renderSolitaire();
+  }
+}
+
+// ===== DASHBOARD =====
+function renderDashboard() {
+  const total=DB.totalGames, wins=DB.totalWins;
+  document.getElementById('dash-xp').textContent = DB.xp.toLocaleString();
+  document.getElementById('dash-win').textContent = total>0?Math.round(wins/total*100)+'%':'0%';
+  document.getElementById('dash-complete').textContent = Object.keys(DB.gameStats).length;
+  document.getElementById('dash-time').textContent = Math.round((DB.playTime||0)/60)+'m';
+
+  const days=LANG==='fr'?['L','M','M','J','V','S','D']:['M','T','W','T','F','S','S'];
+  const maxVal=Math.max(...DB.weeklyXP,1);
+  document.getElementById('weekly-chart').innerHTML = DB.weeklyXP.map((v,i)=>`
+    <div class="chart-bar-wrap">
+      <div class="chart-bar" style="height:${Math.max(4,Math.round(v/maxVal*140))}px;background:${i===new Date().getDay()?'var(--gold2)':'var(--accent)'}" data-val="${v} XP"></div>
+      <div class="chart-label">${days[i]}</div>
+    </div>`).join('');
+
+  const cats=[
+    {k:'memory_cards',name:'Mémoire',nameEN:'Memory',color:'var(--accent)'},
+    {k:'iq',name:'QI',nameEN:'IQ',color:'var(--gold2)'},
+    {k:'qe',name:'QE',nameEN:'EQ',color:'var(--danger)'},
+    {k:'chess',name:'Échecs',nameEN:'Chess',color:'var(--silver)'},
+    {k:'solitaire',name:'Solitaire',nameEN:'Solitaire',color:'var(--success)'},
+  ];
+  document.getElementById('cat-progress').innerHTML = cats.map(c=>{
+    const gs=DB.gameStats[c.k]||{};
+    const pct=Math.min(100,(gs.played||0)*10);
+    return `<div class="cat-prog-row">
+      <div class="cat-prog-name">${LANG==='en'?c.nameEN:c.name}</div>
+      <div class="cat-prog-bar"><div class="cat-prog-fill" style="width:${pct}%;background:${c.color}"></div></div>
+      <div class="cat-prog-val">${pct}%</div>
+    </div>`;
+  }).join('');
+
+  const el=document.getElementById('all-badges-container');
+  el.innerHTML='';
+  renderBadges('all-badges-container');
+}
+
+// ===== LEADERBOARD =====
+function renderFullLeaderboard() {
+  const all=[{name:DB.name,xp:DB.xp,avatar:DB.name.substring(0,2).toUpperCase(),color:'#6c63ff',isMe:true},...FAKE_PLAYERS];
+  all.sort((a,b)=>b.xp-a.xp);
+  const colors=['gold','silver','bronze','','','','','','',''];
+  document.getElementById('full-leaderboard').innerHTML =
+    `<div style="margin-bottom:10px;font-size:11px;color:var(--text3)">${LANG==='fr'?'Actualisé en temps réel':'Updated in real time'} • ${all.length} ${LANG==='fr'?'joueurs':'players'}</div>`+
+    all.map((p,i)=>`
+      <div class="lb-row" style="${p.isMe?'background:rgba(108,99,255,0.08);border-radius:8px;padding:8px 16px;margin:0 -16px':''}">
+        <div class="lb-rank ${colors[i]}" style="font-size:16px">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+        <div class="lb-ava" style="background:${p.color}22;color:${p.color};font-size:11px">${p.avatar}</div>
+        <div class="lb-name">${p.name}${p.isMe?` <span style="font-size:10px;color:var(--accent2);background:var(--glow);padding:1px 6px;border-radius:4px">${LANG==='fr'?'Vous':'You'}</span>`:''}</div>
+        <div style="font-size:12px;margin-right:8px">${RANKS.filter(r=>p.xp>=r.xp).pop()?.icon||'⭐'}</div>
+        <div class="lb-score">${p.xp.toLocaleString()} XP</div>
+      </div>`).join('');
+}
+
+// ===== NOTIF =====
+let notifTimeout;
+function showNotif(icon,msg) {
+  const el=document.getElementById('notif');
+  document.getElementById('notif-icon').textContent=icon;
+  document.getElementById('notif-msg').textContent=msg;
+  el.classList.add('show');
+  clearTimeout(notifTimeout);
+  notifTimeout=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+function showProfile() {
+  const name=prompt(LANG==='fr'?'Votre nom de joueur:':'Your player name:', DB.name);
+  if (name&&name.trim()) { DB.name=name.trim(); saveDB(); updateSidebar(); showNotif('👤',LANG==='fr'?'Profil mis à jour!':'Profile updated!'); }
+}
+
+function resetData() {
+  if (confirm(LANG==='fr'?'Réinitialiser toute la progression?':'Reset all progress?')) {
+    localStorage.removeItem(SAVE_KEY); DB=freshDB(); saveDB(); updateSidebar();
+    navigate('home',false); showNotif('🗑️',LANG==='fr'?'Progression réinitialisée':'Progress reset');
+  }
+}
+
+// ===== EVENTS =====
+document.getElementById('cat-tabs').addEventListener('click',e=>{
+  const tab=e.target.closest('.cat-tab');
+  if (!tab) return;
+  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  renderGamesGrid(tab.dataset.cat);
+});
+
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',()=>navigate(item.dataset.nav));
+});
+
+// ===== PLAY TIME TRACKER =====
+setInterval(()=>{
+  if (currentScreen.includes('game')) { DB.playTime=(DB.playTime||0)+1; saveDB(); }
+},60000);
+
+// ===== INIT =====
+loadDB();
+LANG=DB.lang||'fr';
+applyLang();
+updateSidebar();
+navigate('home',false);
+</script>
+</body>
+</html>
